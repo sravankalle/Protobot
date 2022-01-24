@@ -63,7 +63,7 @@ async def play(ctx, *search):
         player = None
         channel = ctx.author.voice.channel
 
-        if not vc and not vc.is_connected:
+        if not vc:
             player = await channel.connect()
         
     
