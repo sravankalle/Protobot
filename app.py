@@ -58,9 +58,15 @@ async def play(ctx, *search):
         if ctx.author.voice.channel:
             print("channel detected")
 
+        vc = get(bot.voice_clients, guild=ctx.guild)
+        
+        player = None
         channel = ctx.author.voice.channel
-        player = await channel.connect()
 
+        if not vc and not vc.is_connected:
+            player = await channel.connect()
+        
+    
         async with ctx.typing():
             player.play(discord.FFmpegPCMAudio(source=song.url), after=lambda e: play_next(ctx))
         await ctx.send(embed=song.play_embed())
