@@ -1,6 +1,7 @@
 import asyncio
 from asyncio.tasks import run_coroutine_threadsafe, sleep
 import discord
+import os
 from discord import colour
 from discord.colour import Colour
 from discord.ext import commands
@@ -109,4 +110,4 @@ async def queue(ctx):
         await ctx.send(message)
     else:
         await ctx.send("Queue is empty")
-bot.run("ODUxMzc3NDE3NTY2Mjg5OTgw.YL3ZAg.UH7tGuce1cIXh8_fA9e9zuxg4to")
+bot.run(os.getenv("key"))
