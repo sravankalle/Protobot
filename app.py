@@ -1,3 +1,4 @@
+from flask import Flask
 import asyncio
 from asyncio.tasks import run_coroutine_threadsafe, sleep
 import discord
@@ -12,6 +13,12 @@ from tables import User
 from work import Work
 
 bot = commands.Bot(command_prefix="$")
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return "<h1>Protobot is up and running!</h1>"
 
 @bot.event
 async def on_ready():
@@ -116,4 +123,6 @@ async def queue(ctx):
         await ctx.send(message)
     else:
         await ctx.send("Queue is empty")
+
+app.run()
 bot.run(os.getenv("key"))
