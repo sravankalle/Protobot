@@ -1,4 +1,4 @@
-from flask import Flask
+from quart import Quart
 import asyncio
 from asyncio.tasks import run_coroutine_threadsafe, sleep
 import discord
@@ -14,7 +14,7 @@ from work import Work
 
 bot = commands.Bot(command_prefix="$")
 
-app = Flask(__name__)
+app = Quart(__name__)
 
 @app.route('/')
 def index():
@@ -33,7 +33,6 @@ async def ping(ctx):
 @bot.command(description="Get your balance")
 async def balance(ctx):
     balance = User.getUserBalance(ctx.author.id)
-
     embed = discord.Embed(colour=Colour.dark_orange())
     embed.title = "Balance"
     embed.description = f"**{ctx.author.name}**'s Balance: {balance[0]} :coin:"
@@ -124,5 +123,12 @@ async def queue(ctx):
     else:
         await ctx.send("Queue is empty")
 
+@app.before_serving
+async def before_serving():
+    loop = asyncio.get_event_loop()    
+    await bot.login(os.getenv("key"))
+    loop.create_task(bot.connect())
+
 app.run(host="0.0.0.0", port=8080)
-bot.run(os.getenv("key"))
+
+    
