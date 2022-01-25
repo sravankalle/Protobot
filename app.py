@@ -84,12 +84,11 @@ async def play(ctx, *search):
 
 def play_next(ctx):
     if len(music.queue[ctx.message.guild.id]) >= 1:
-        del music.queue[ctx.message.guild.id][0]
-        vc = get(bot.voice_clients, guild=ctx.guild) 
-            
+        vc = get(bot.voice_clients, guild=ctx.guild)     
         song = music.queue[ctx.message.guild.id][0]
         vc.play(discord.FFmpegPCMAudio(source=song.url), after=lambda e: play_next(ctx))
         asyncio.run_coroutine_threadsafe(ctx.send(embed=song.play_embed()), bot.loop)
+        music.queue[ctx.message.guild.id].pop()
     else:
         vc = get(bot.voice_clients, guild=ctx.guild)
         vc.disconnect()
