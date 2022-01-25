@@ -72,7 +72,10 @@ async def play(ctx, *search):
         if not vc:
             print("no player")
             player = await channel.connect()
-        
+        else:
+            async with ctx.typing():
+              player.play(discord.FFmpegPCMAudio(source=song.url), after=lambda e: play_next(ctx))
+            return await ctx.send(embed=song.play_embed())    
     
         async with ctx.typing():
             player.play(discord.FFmpegPCMAudio(source=song.url), after=lambda e: play_next(ctx))
@@ -91,7 +94,7 @@ def play_next(ctx):
         music.queue[ctx.message.guild.id].pop()
     else:
         vc = get(bot.voice_clients, guild=ctx.guild)
-        vc.disconnect()
+        bot.loop.run_coroutine_threadsafe(vc.disconnect())
         print("done in else")
 
 @bot.command()
@@ -128,7 +131,7 @@ async def leave(ctx):
     if guild_id in music.queue:
         music.queue[guild_id] = []
         vc = get(bot.voice_clients, guild=ctx.guild)
-        vc.disconnect()
+        await vc.disconnect()
         await ctx.send("Bye!") 
     else:
         await ctx.send("I'm not in a voice channel")
