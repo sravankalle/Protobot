@@ -70,6 +70,7 @@ async def play(ctx, *search):
         channel = ctx.author.voice.channel
 
         if not vc:
+            print("no player")
             player = await channel.connect()
         
     
@@ -85,15 +86,14 @@ def play_next(ctx):
     if len(music.queue[ctx.message.guild.id]) >= 1:
         del music.queue[ctx.message.guild.id][0]
         vc = get(bot.voice_clients, guild=ctx.guild) 
-        if len(music.queue[ctx.message.guild.id]) == 0:
-            print("done")
-        else:    
-            song = music.queue[ctx.message.guild.id][0]
-            vc.stop()
-            vc.play(discord.FFmpegPCMAudio(source=song.url), after=lambda e: play_next(ctx))
-            asyncio.run_coroutine_threadsafe(ctx.send(embed=song.play_embed()), bot.loop)
+            
+        song = music.queue[ctx.message.guild.id][0]
+        vc.play(discord.FFmpegPCMAudio(source=song.url), after=lambda e: play_next(ctx))
+        asyncio.run_coroutine_threadsafe(ctx.send(embed=song.play_embed()), bot.loop)
     else:
-        print("done")
+        vc = get(bot.voice_clients, guild=ctx.guild)
+        vc.disconnect()
+        print("done in else")
 
 @bot.command()
 async def skip(ctx):
@@ -123,6 +123,16 @@ async def queue(ctx):
     else:
         await ctx.send("Queue is empty")
 
+@bot.command()
+async def leave(ctx):
+    guild_id = ctx.message.guild.id
+    if guild_id in music.queue:
+        music.queue[guild_id] = []
+        vc = get(bot.voice_clients, guild=ctx.guild)
+        vc.disconnect()
+        await ctx.send("Bye!") 
+    else:
+        await ctx.send("I'm not in a voice channel")
 
 bot.loop.create_task(app.run_task(host="0.0.0.0", port=8080))
 bot.run(os.getenv("key"))
