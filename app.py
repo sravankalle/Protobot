@@ -94,7 +94,7 @@ def play_next(ctx):
         music.queue[ctx.message.guild.id].pop()
     else:
         vc = get(bot.voice_clients, guild=ctx.guild)
-        bot.loop.run_coroutine_threadsafe(vc.disconnect())
+        asyncio.run_coroutine_threadsafe(vc.disconnect(), bot.loop)
         print("done in else")
 
 @bot.command()
