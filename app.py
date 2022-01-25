@@ -123,12 +123,6 @@ async def queue(ctx):
     else:
         await ctx.send("Queue is empty")
 
-@app.before_serving
-async def before_serving():
-    loop = asyncio.get_event_loop()    
-    await bot.login(os.getenv("key"))
-    loop.create_task(bot.connect())
 
-app.run(host="0.0.0.0", port=8080)
-
-    
+bot.loop.create_task(app.run_task(host="0.0.0.0", port=8080))
+bot.run(os.getenv("key"))
